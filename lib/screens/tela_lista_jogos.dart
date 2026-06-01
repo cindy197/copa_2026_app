@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import '../data/database_helper.dart';
 import '../models/jogo.dart';
+import '../theme/app_theme.dart';
+import '../widgets/top_app_bar.dart';
+import '../widgets/bottom_nav_bar.dart';
 import '../widgets/card_jogo.dart';
+import 'tela_cadastro_jogo.dart';
+import 'tela_resultados.dart';
+import 'tela_editar_placar.dart';
 
 class TelaListaJogos extends StatefulWidget {
   const TelaListaJogos({super.key});
@@ -10,120 +17,249 @@ class TelaListaJogos extends StatefulWidget {
 }
 
 class _TelaListaJogosState extends State<TelaListaJogos> {
-  final List<Jogo> jogos = [
-    Jogo(timeA: 'Brasil', timeB: 'Argentina'),
-    Jogo(timeA: 'França', timeB: 'Alemanha'),
-    Jogo(timeA: 'Espanha', timeB: 'Itália'),
-    
-    Jogo(timeA: 'Austrália', timeB: 'Nova Zelândia'),
-  ];
+  List<Jogo> _jogos = [];
+  bool _carregando = true;
 
-  final TextEditingController timeAController = TextEditingController();  
-  final TextEditingController timeBController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _carregarJogos();
+  }
 
-  int? IndexEditando;
+  Future<void> _carregarJogos() async {
+    setState(() => _carregando = true);
+    try {
+      final jogos = await DatabaseHelper.instance.getAllJogos();
+      setState(() {
+        _jogos = jogos;
+        _carregando = false;
+      });
+    } catch (e) {
+      setState(() => _carregando = false);
+    }
+  }
 
-  void adicionarJogo() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Cadastre um novo jogo'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+  List<Jogo> get _jogosAoVivo =>
+      _jogos.where((j) => j.status == 'ao_vivo').toList();
+
+  List<Jogo> get _proximosJogos =>
+      _jogos.where((j) => j.status == 'agendado').toList();
+
+  List<Jogo> get _jogosFinalizados =>
+      _jogos.where((j) => j.status == 'finalizado').toList();
+
+  Future<void> _deletarJogo(Jogo jogo) async {
+    if (jogo.id == null) return;
+    await DatabaseHelper.instance.deleteJogo(jogo.id!);
+    _carregarJogos();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      appBar: const TopAppBar(title: 'COPA DO MUNDO 2026'),
+      body: _carregando
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _carregarJogos,
+              child: ListView(
+                padding: const EdgeInsets.only(bottom: 100, top: 16),
+                children: [
+                  if (_jogosAoVivo.isNotEmpty) ...[
+                    _buildSecaoAoVivo(),
+                    const SizedBox(height: 24),
+                  ],
+                  if (_proximosJogos.isNotEmpty) ...[
+                    _buildSecaoProximos(),
+                    const SizedBox(height: 24),
+                  ],
+                  if (_jogosFinalizados.isNotEmpty) ...[
+                    _buildSecaoResultados(),
+                  ],
+                  if (_jogos.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Center(
+                        child: Text(
+                          'Nenhum jogo cadastrado.\nToque em + para adicionar.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: AppTheme.onSurfaceVariant),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TelaCadastroJogo()),
+          );
+          _carregarJogos();
+        },
+        backgroundColor: AppTheme.primaryContainer,
+        foregroundColor: AppTheme.onPrimaryContainer,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, size: 32),
+      ),
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TelaCadastroJogo()),
+            ).then((_) => _carregarJogos());
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TelaResultados()),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildSecaoAoVivo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextField(
-                controller: timeAController,
-                decoration: const InputDecoration(
-                  labelText: 'Time A',
+              const Text(
+                'Ao Vivo',
+                style: TextStyle(
+                  fontFamily: 'Archivo Narrow',
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.primary,
+                  letterSpacing: -1,
                 ),
               ),
-              TextField(
-                controller: timeBController,
-                decoration: const InputDecoration(
-                  labelText: 'Time B',
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.secondaryContainer.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: AppTheme.secondaryContainer.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppTheme.secondary,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${_jogosAoVivo.length} Ativos',
+                      style: const TextStyle(
+                        fontFamily: 'JetBrains Mono',
+                        fontSize: 12,
+                        color: AppTheme.secondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String timeA = timeAController.text.trim();
-                String timeB = timeBController.text.trim();
-
-                if (timeA.isEmpty || timeB.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Por favor, preencha ambos os campos.')),
-                  );
-                  return;
-                }
-
-                setState(() {
-                  if (IndexEditando != null) {
-                    jogos[IndexEditando!] = Jogo(timeA: timeA, timeB: timeB);
-                  } else {
-                    jogos.add(
-                      Jogo(timeA: timeA, timeB: timeB),
-                    );
-                  }
-                });
-
-                timeAController.clear();
-                timeBController.clear();
-
-                Navigator.pop(context);
-              },
-              child: const Text('Salvar'),
-            ),            
-          ],
-        );
-      },
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 260,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: _jogosAoVivo.length,
+            itemBuilder: (context, index) {
+              return SizedBox(
+                width: 300,
+                child: CardJogo(
+                  jogo: _jogosAoVivo[index],
+                  onTap: () => _editarJogo(_jogosAoVivo[index]),
+                  onDelete: () => _deletarJogo(_jogosAoVivo[index]),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
-  @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Minha Copa 2026!'),
-    ),
+  Widget _buildSecaoProximos() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Próximos',
+            style: TextStyle(
+              fontFamily: 'Archivo Narrow',
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.primary,
+              letterSpacing: -1,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ..._proximosJogos.map((jogo) => CardJogo(
+          jogo: jogo,
+          onTap: () => _editarJogo(jogo),
+          onDelete: () => _deletarJogo(jogo),
+        )),
+      ],
+    );
+  }
 
-    body: ListView.builder(
-      itemCount: jogos.length,
+  Widget _buildSecaoResultados() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Resultados',
+            style: TextStyle(
+              fontFamily: 'Archivo Narrow',
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.primary,
+              letterSpacing: -1,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ..._jogosFinalizados.map((jogo) => CardJogo(
+          jogo: jogo,
+          onTap: () => _editarJogo(jogo),
+          onDelete: () => _deletarJogo(jogo),
+        )),
+      ],
+    );
+  }
 
-      itemBuilder: (context, index) {
-        return CardJogo(
-          jogo: jogos[index],
-
-          onTap: () {
-            IndexEditando = index;
-
-            timeAController.text = jogos[index].timeA;
-            timeBController.text = jogos[index].timeB;
-
-            adicionarJogo();
-          },
-
-          onDelete: () {
-            setState(() {
-              jogos.removeAt(index);
-            });
-          },
-        );
-      },
-    ),
-
-    floatingActionButton: FloatingActionButton(
-      onPressed: adicionarJogo,
-      child: const Icon(Icons.add),
-    ),
-  );
-}
+  Future<void> _editarJogo(Jogo jogo) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TelaEditarPlacar(jogo: jogo),
+      ),
+    );
+    _carregarJogos();
+  }
 }
