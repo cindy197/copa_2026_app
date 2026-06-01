@@ -1,86 +1,163 @@
-⚽ Copa 2026 App
+# ⚽ Copa 2026 App
 
-Aplicativo mobile desenvolvido com Flutter para exibição de partidas da Copa do Mundo FIFA 2026, permitindo visualizar informações dos jogos através de uma interface moderna e responsiva.
+> Aplicativo mobile desenvolvido com **Flutter** para acompanhamento de partidas da Copa do Mundo FIFA 2026.
 
-📖 Sobre o Projeto
+![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=flat&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.12+-0175C2?style=flat&logo=dart&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-sqflite-003B57?style=flat&logo=sqlite&logoColor=white)
+![License](https://img.shields.io/badge/Licença-MIT-green?style=flat)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=flat)
 
-O Copa 2026 App foi criado com o objetivo de praticar conceitos fundamentais do desenvolvimento mobile utilizando Flutter, incluindo organização de código, componentização de interfaces, gerenciamento de estado e consumo de dados locais.
+---
 
-O projeto apresenta uma listagem de partidas da Copa do Mundo de 2026 utilizando componentes reutilizáveis e uma estrutura organizada seguindo boas práticas de desenvolvimento.
+## 📖 Sobre o Projeto
 
-✨ Funcionalidades
-📋 Listagem de partidas da Copa do Mundo 2026
-⚽ Exibição de seleções participantes
-🕒 Informações de data e horário dos jogos
-🎨 Interface construída com Material Design
-📱 Layout responsivo para diferentes tamanhos de tela
-🧩 Componentes reutilizáveis para exibição dos jogos
-📸 Demonstração
+O **Copa 2026 App** é um aplicativo mobile criado para exibir informações sobre as partidas da Copa do Mundo FIFA 2026. Desenvolvido como projeto acadêmico, o app aplica boas práticas de desenvolvimento Flutter, incluindo componentização de interfaces, organização em camadas, persistência de dados com SQLite e tipografia customizada com Google Fonts.
 
-Adicione aqui screenshots do aplicativo após finalizar o projeto.
+O projeto foi construído em trio, servindo como prática integradora dos conteúdos de **Análise e Desenvolvimento de Sistemas**, com foco em desenvolvimento mobile e arquitetura de software.
 
-Tela Principal
+---
 
-🏗️ Arquitetura do Projeto
+## ✨ Funcionalidades
+
+- 📋 Listagem de partidas da Copa do Mundo 2026
+- ⚽ Exibição das seleções participantes em cada jogo
+- 🕒 Data e horário de cada partida
+- 🗄️ Persistência local de dados com SQLite (`sqflite`)
+- 🔤 Tipografia customizada via Google Fonts
+- 🎨 Interface baseada em Material Design
+- 📱 Layout responsivo para diferentes tamanhos de tela
+- 🧩 Componentes reutilizáveis (widgets) para exibição dos jogos
+
+---
+
+## 🏗️ Arquitetura do Projeto
+
+```
 lib/
 │
 ├── models/
-│   └── jogo.dart
+│   └── jogo.dart              # Modelo de dados da partida
 │
 ├── screens/
-│   └── tela_lista_jogos.dart
+│   └── tela_lista_jogos.dart  # Tela principal com a listagem
 │
 ├── widgets/
-│   └── card_jogo.dart
+│   └── card_jogo.dart         # Card reutilizável de cada partida
 │
-└── main.dart
-Organização
-Models: Representação dos dados da aplicação.
-Screens: Telas principais da interface.
-Widgets: Componentes reutilizáveis.
-Main: Ponto de entrada da aplicação.
-🛠️ Tecnologias Utilizadas
-Flutter
-Dart
-Material Design
-🚀 Como Executar
-Clone o projeto
+└── main.dart                  # Ponto de entrada da aplicação
+```
+
+| Camada | Responsabilidade |
+|--------|-----------------|
+| `models/` | Representação e estrutura dos dados da aplicação |
+| `screens/` | Telas e páginas da interface do usuário |
+| `widgets/` | Componentes visuais reutilizáveis |
+| `main.dart` | Configuração inicial e ponto de entrada |
+
+---
+
+## 🛠️ Tecnologias e Dependências
+
+| Tecnologia | Versão | Uso |
+|-----------|--------|-----|
+| Flutter | 3.x | Framework principal |
+| Dart | ^3.12.0 | Linguagem de programação |
+| sqflite | ^2.3.0 | Banco de dados SQLite local |
+| sqflite_common_ffi | ^2.3.0 | Suporte desktop para SQLite |
+| google_fonts | ^6.1.0 | Fontes customizadas |
+| intl | ^0.19.0 | Formatação de datas e internacionalização |
+| path | ^1.9.0 | Manipulação de caminhos de arquivo |
+| cupertino_icons | ^1.0.8 | Ícones estilo iOS |
+
+---
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) instalado e configurado
+- Dart SDK ^3.12.0
+- Android Studio ou VS Code com extensão Flutter
+- Emulador Android/iOS ou dispositivo físico conectado
+
+### Passo a passo
+
+```bash
+# 1. Clone o repositório
 git clone https://github.com/cindy197/copa_2026_app.git
-Entre na pasta
+
+# 2. Acesse a pasta do projeto
 cd copa_2026_app
-Instale as dependências
+
+# 3. Instale as dependências
 flutter pub get
-Execute o projeto
+
+# 4. Verifique se o ambiente está configurado
+flutter doctor
+
+# 5. Execute o projeto
 flutter run
-🎯 Objetivos de Aprendizagem
+```
+
+### Plataformas suportadas
+
+| Plataforma | Suporte |
+|-----------|---------|
+| Android | ✅ |
+| iOS | ✅ |
+| Web | ✅ |
+| Linux | ✅ |
+| macOS | ✅ |
+| Windows | ✅ |
+
+---
+
+## 🎯 Objetivos de Aprendizagem
 
 Este projeto foi desenvolvido para consolidar conhecimentos em:
 
-Desenvolvimento Mobile com Flutter
-Estruturação de projetos
-Widgets Stateless e Stateful
-Componentização de interfaces
-Manipulação de listas
-Organização de código em camadas
-Navegação entre telas
-📈 Melhorias Futuras
- Integração com API esportiva
- Tela de detalhes da partida
- Sistema de favoritos
- Busca de jogos
- Classificação dos grupos
- Tema escuro
- Persistência de dados local
-💡 Principais Aprendizados
+- Desenvolvimento mobile com **Flutter**
+- Estruturação de projetos em camadas (Models, Screens, Widgets)
+- Criação de **Widgets Stateless e Stateful**
+- Componentização e reutilização de interfaces
+- Persistência de dados local com **SQLite**
+- Formatação de datas com o pacote `intl`
+- Tipografia e design com **Google Fonts**
+- Organização e boas práticas de código
 
-Durante o desenvolvimento deste projeto foram aplicados conceitos importantes do ecossistema Flutter, como criação de interfaces responsivas, reutilização de componentes e organização de código para facilitar manutenção e escalabilidade.
+---
 
-👩‍💻 Desenvolvedores
-Cindy Pessoa, Tauan Lima e Luan Henrique
+## 📈 Melhorias Futuras
 
-Estudantes de Análise e Desenvolvimento de Sistemas com foco em Desenvolvimento Mobile e Segurança da Informação.
+- [ ] Integração com API esportiva em tempo real
+- [ ] Tela de detalhes de cada partida
+- [ ] Sistema de partidas favoritas
+- [ ] Busca e filtragem de jogos
+- [ ] Classificação dos grupos
+- [ ] Tema escuro (Dark Mode)
+- [ ] Notificações de jogos
 
-GitHub: github.com/cindy197
-⭐ Projeto Acadêmico
+---
 
-Projeto desenvolvido como atividade prática para estudo e aprimoramento das habilidades em Flutter e desenvolvimento mobile.
+## 👩‍💻 Desenvolvedores
+
+| Nome | GitHub |
+|------|--------|
+| Cindy Pessoa | [@cindy197](https://github.com/cindy197) |
+| Tauan Lima | — |
+| Luan Henrique | — |
+
+Estudantes de **Análise e Desenvolvimento de Sistemas**, com foco em Desenvolvimento Mobile e Segurança da Informação.
+
+---
+
+## 📄 Licença
+
+Este projeto é de uso **acadêmico**, desenvolvido como atividade prática de estudo e aprimoramento de habilidades em Flutter e desenvolvimento mobile.
+
+---
+
+<p align="center">
+  Feito com ❤️ e ⚽ por Cindy, Tauan e Luan
+</p>
