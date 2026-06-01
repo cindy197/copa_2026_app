@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'app.dart';
 
@@ -11,5 +12,5 @@ void main() {
     databaseFactory = databaseFactoryFfi;
   }
 
-  runApp(const CopaApp());
+  runApp(const ProviderScope(child: CopaApp()));
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../data/database_helper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/jogo.dart';
+import '../providers/jogos_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/top_app_bar.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -9,75 +10,53 @@ import 'tela_cadastro_jogo.dart';
 import 'tela_resultados.dart';
 import 'tela_editar_placar.dart';
 
-class TelaListaJogos extends StatefulWidget {
+class TelaListaJogos extends ConsumerStatefulWidget {
   const TelaListaJogos({super.key});
 
   @override
-  State<TelaListaJogos> createState() => _TelaListaJogosState();
+  ConsumerState<TelaListaJogos> createState() => _TelaListaJogosState();
 }
 
-class _TelaListaJogosState extends State<TelaListaJogos> {
-  List<Jogo> _jogos = [];
-  bool _carregando = true;
-
+class _TelaListaJogosState extends ConsumerState<TelaListaJogos> {
   @override
   void initState() {
     super.initState();
-    _carregarJogos();
-  }
-
-  Future<void> _carregarJogos() async {
-    setState(() => _carregando = true);
-    try {
-      final jogos = await DatabaseHelper.instance.getAllJogos();
-      setState(() {
-        _jogos = jogos;
-        _carregando = false;
-      });
-    } catch (e) {
-      setState(() => _carregando = false);
-    }
-  }
-
-  List<Jogo> get _jogosAoVivo =>
-      _jogos.where((j) => j.status == 'ao_vivo').toList();
-
-  List<Jogo> get _proximosJogos =>
-      _jogos.where((j) => j.status == 'agendado').toList();
-
-  List<Jogo> get _jogosFinalizados =>
-      _jogos.where((j) => j.status == 'finalizado').toList();
-
-  Future<void> _deletarJogo(Jogo jogo) async {
-    if (jogo.id == null) return;
-    await DatabaseHelper.instance.deleteJogo(jogo.id!);
-    _carregarJogos();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(jogosProvider.notifier).carregarJogos();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = ref.watch(jogosProvider);
+    final jogos = provider.jogos;
+    final carregando = provider.carregando;
+    final jogosAoVivo = provider.jogosAoVivo;
+    final proximosJogos = provider.jogosAgendados;
+    final jogosFinalizados = provider.jogosFinalizados;
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: const TopAppBar(title: 'COPA DO MUNDO 2026'),
-      body: _carregando
+      body: carregando
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-              onRefresh: _carregarJogos,
+              onRefresh: () => ref.read(jogosProvider.notifier).carregarJogos(),
               child: ListView(
                 padding: const EdgeInsets.only(bottom: 100, top: 16),
                 children: [
-                  if (_jogosAoVivo.isNotEmpty) ...[
-                    _buildSecaoAoVivo(),
+                  if (jogosAoVivo.isNotEmpty) ...[
+                    _buildSecaoAoVivo(jogosAoVivo),
                     const SizedBox(height: 24),
                   ],
-                  if (_proximosJogos.isNotEmpty) ...[
-                    _buildSecaoProximos(),
+                  if (proximosJogos.isNotEmpty) ...[
+                    _buildSecaoProximos(proximosJogos),
                     const SizedBox(height: 24),
                   ],
-                  if (_jogosFinalizados.isNotEmpty) ...[
-                    _buildSecaoResultados(),
+                  if (jogosFinalizados.isNotEmpty) ...[
+                    _buildSecaoResultados(jogosFinalizados),
                   ],
-                  if (_jogos.isEmpty)
+                  if (jogos.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(40),
                       child: Center(
@@ -97,7 +76,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
             context,
             MaterialPageRoute(builder: (_) => const TelaCadastroJogo()),
           );
-          _carregarJogos();
+          ref.read(jogosProvider.notifier).carregarJogos();
         },
         backgroundColor: AppTheme.primaryContainer,
         foregroundColor: AppTheme.onPrimaryContainer,
@@ -111,7 +90,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const TelaCadastroJogo()),
-            ).then((_) => _carregarJogos());
+            ).then((_) => ref.read(jogosProvider.notifier).carregarJogos());
           } else if (index == 2) {
             Navigator.push(
               context,
@@ -123,7 +102,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
     );
   }
 
-  Widget _buildSecaoAoVivo() {
+  Widget _buildSecaoAoVivo(List jogos) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -163,7 +142,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '${_jogosAoVivo.length} Ativos',
+                      '${jogos.length} Ativos',
                       style: const TextStyle(
                         fontFamily: 'JetBrains Mono',
                         fontSize: 12,
@@ -182,14 +161,14 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _jogosAoVivo.length,
+            itemCount: jogos.length,
             itemBuilder: (context, index) {
               return SizedBox(
                 width: 300,
                 child: CardJogo(
-                  jogo: _jogosAoVivo[index],
-                  onTap: () => _editarJogo(_jogosAoVivo[index]),
-                  onDelete: () => _deletarJogo(_jogosAoVivo[index]),
+                  jogo: jogos[index],
+                  onTap: () => _editarJogo(jogos[index]),
+                  onDelete: () => _deletarJogo(jogos[index]),
                 ),
               );
             },
@@ -199,7 +178,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
     );
   }
 
-  Widget _buildSecaoProximos() {
+  Widget _buildSecaoProximos(List jogos) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -217,7 +196,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
           ),
         ),
         const SizedBox(height: 12),
-        ..._proximosJogos.map((jogo) => CardJogo(
+        ...jogos.map((jogo) => CardJogo(
           jogo: jogo,
           onTap: () => _editarJogo(jogo),
           onDelete: () => _deletarJogo(jogo),
@@ -226,7 +205,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
     );
   }
 
-  Widget _buildSecaoResultados() {
+  Widget _buildSecaoResultados(List jogos) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -244,7 +223,7 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
           ),
         ),
         const SizedBox(height: 12),
-        ..._jogosFinalizados.map((jogo) => CardJogo(
+        ...jogos.map((jogo) => CardJogo(
           jogo: jogo,
           onTap: () => _editarJogo(jogo),
           onDelete: () => _deletarJogo(jogo),
@@ -260,6 +239,11 @@ class _TelaListaJogosState extends State<TelaListaJogos> {
         builder: (_) => TelaEditarPlacar(jogo: jogo),
       ),
     );
-    _carregarJogos();
+    ref.read(jogosProvider.notifier).carregarJogos();
+  }
+
+  Future<void> _deletarJogo(Jogo jogo) async {
+    if (jogo.id == null) return;
+    await ref.read(jogosProvider.notifier).removerJogo(jogo.id!);
   }
 }

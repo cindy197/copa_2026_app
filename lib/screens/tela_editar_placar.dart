@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import '../data/database_helper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/jogo.dart';
 import '../theme/app_theme.dart';
+import '../providers/jogos_provider.dart';
 import '../widgets/top_app_bar.dart';
 import '../widgets/bottom_nav_bar.dart';
 
-class TelaEditarPlacar extends StatefulWidget {
+class TelaEditarPlacar extends ConsumerStatefulWidget {
   final Jogo jogo;
 
   const TelaEditarPlacar({super.key, required this.jogo});
 
   @override
-  State<TelaEditarPlacar> createState() => _TelaEditarPlacarState();
+  ConsumerState<TelaEditarPlacar> createState() => _TelaEditarPlacarState();
 }
 
-class _TelaEditarPlacarState extends State<TelaEditarPlacar> {
+class _TelaEditarPlacarState extends ConsumerState<TelaEditarPlacar> {
   late int _golsA;
   late int _golsB;
   late String _status;
@@ -42,9 +43,9 @@ class _TelaEditarPlacarState extends State<TelaEditarPlacar> {
     widget.jogo.golsB = _golsB;
     widget.jogo.status = _status;
 
-    await DatabaseHelper.instance.updateJogo(widget.jogo);
+    final sucesso = await ref.read(jogosProvider.notifier).atualizarJogo(widget.jogo);
 
-    if (mounted) {
+    if (sucesso && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Placar atualizado!'),
@@ -73,7 +74,7 @@ class _TelaEditarPlacarState extends State<TelaEditarPlacar> {
     );
 
     if (confirm == true && widget.jogo.id != null) {
-      await DatabaseHelper.instance.deleteJogo(widget.jogo.id!);
+      await ref.read(jogosProvider.notifier).removerJogo(widget.jogo.id!);
       if (mounted) Navigator.pop(context, true);
     }
   }

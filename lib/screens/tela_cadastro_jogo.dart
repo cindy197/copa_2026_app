@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import '../data/database_helper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/jogo.dart';
 import '../theme/app_theme.dart';
+import '../providers/jogos_provider.dart';
 import '../widgets/top_app_bar.dart';
 import '../widgets/bottom_nav_bar.dart';
 
-class TelaCadastroJogo extends StatefulWidget {
+class TelaCadastroJogo extends ConsumerStatefulWidget {
   const TelaCadastroJogo({super.key});
 
   @override
-  State<TelaCadastroJogo> createState() => _TelaCadastroJogoState();
+  ConsumerState<TelaCadastroJogo> createState() => _TelaCadastroJogoState();
 }
 
-class _TelaCadastroJogoState extends State<TelaCadastroJogo> {
+class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
   final _formKey = GlobalKey<FormState>();
 
   String? _timeASelecionado;
@@ -59,9 +60,9 @@ class _TelaCadastroJogoState extends State<TelaCadastroJogo> {
       status: _golsA > 0 || _golsB > 0 ? 'finalizado' : 'agendado',
     );
 
-    await DatabaseHelper.instance.insertJogo(jogo);
+    final sucesso = await ref.read(jogosProvider.notifier).adicionarJogo(jogo);
 
-    if (mounted) {
+    if (sucesso && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Jogo cadastrado com sucesso!'),

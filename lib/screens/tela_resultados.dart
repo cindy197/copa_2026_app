@@ -1,55 +1,46 @@
 import 'package:flutter/material.dart';
-import '../data/database_helper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/jogo.dart';
 import '../theme/app_theme.dart';
+import '../providers/jogos_provider.dart';
 import '../widgets/top_app_bar.dart';
 import '../widgets/bottom_nav_bar.dart';
 
-class TelaResultados extends StatefulWidget {
+class TelaResultados extends ConsumerStatefulWidget {
   const TelaResultados({super.key});
 
   @override
-  State<TelaResultados> createState() => _TelaResultadosState();
+  ConsumerState<TelaResultados> createState() => _TelaResultadosState();
 }
 
-class _TelaResultadosState extends State<TelaResultados> {
-  List<Jogo> _jogosFinalizados = [];
-  bool _carregando = true;
-
+class _TelaResultadosState extends ConsumerState<TelaResultados> {
   @override
   void initState() {
     super.initState();
-    _carregarJogos();
-  }
-
-  Future<void> _carregarJogos() async {
-    setState(() => _carregando = true);
-    try {
-      final todos = await DatabaseHelper.instance.getAllJogos();
-      setState(() {
-        _jogosFinalizados = todos.where((j) => j.status == 'finalizado').toList();
-        _carregando = false;
-      });
-    } catch (e) {
-      setState(() => _carregando = false);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(jogosProvider.notifier).carregarJogos();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = ref.watch(jogosProvider);
+    final jogosFinalizados = provider.jogosFinalizados;
+    final carregando = provider.carregando;
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: const TopAppBar(title: 'COPA DO MUNDO 2026'),
-      body: _carregando
+      body: carregando
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-              onRefresh: _carregarJogos,
+              onRefresh: () => ref.read(jogosProvider.notifier).carregarJogos(),
               child: ListView(
                 padding: const EdgeInsets.only(bottom: 100, top: 16),
                 children: [
                   _buildHeroSummary(),
                   const SizedBox(height: 24),
-                  _buildRecentResults(),
+                  _buildRecentResults(jogosFinalizados),
                   const SizedBox(height: 24),
                   _buildBentoGrid(),
                   const SizedBox(height: 24),
@@ -142,7 +133,7 @@ class _TelaResultadosState extends State<TelaResultados> {
     );
   }
 
-  Widget _buildRecentResults() {
+  Widget _buildRecentResults(List<Jogo> jogosFinalizados) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,9 +174,9 @@ class _TelaResultadosState extends State<TelaResultados> {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: _jogosFinalizados.length,
+            itemCount: jogosFinalizados.length,
             itemBuilder: (context, index) {
-              final jogo = _jogosFinalizados[index];
+              final jogo = jogosFinalizados[index];
               return _buildResultShelfCard(jogo);
             },
           ),
