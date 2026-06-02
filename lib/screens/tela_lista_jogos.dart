@@ -43,7 +43,7 @@ class _TelaListaJogosState extends ConsumerState<TelaListaJogos> {
           : RefreshIndicator(
               onRefresh: () => ref.read(jogosProvider.notifier).carregarJogos(),
               child: ListView(
-                padding: const EdgeInsets.only(bottom: 100, top: 16),
+                padding: EdgeInsets.only(bottom: 100 + MediaQuery.of(context).padding.bottom, top: 16),
                 children: [
                   if (jogosAoVivo.isNotEmpty) ...[
                     _buildSecaoAoVivo(jogosAoVivo),

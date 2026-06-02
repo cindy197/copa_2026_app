@@ -15,6 +15,7 @@ class TelaCadastroJogo extends ConsumerStatefulWidget {
 
 class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
   final _formKey = GlobalKey<FormState>();
+  final _dataController = TextEditingController();
 
   String? _timeASelecionado;
   String? _timeBSelecionado;
@@ -70,10 +71,19 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
         ),
       );
       Navigator.pop(context, true);
+    } else if (!sucesso && mounted) {
+      final erro = ref.read(jogosProvider).erro ?? 'Erro desconhecido ao cadastrar';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(erro),
+          backgroundColor: AppTheme.error,
+        ),
+      );
     }
   }
 
   void _limparFormulario() {
+    _dataController.clear();
     setState(() {
       _timeASelecionado = null;
       _timeBSelecionado = null;
@@ -97,7 +107,7 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 120 + MediaQuery.of(context).padding.bottom),
         child: Form(
           key: _formKey,
           child: Column(
@@ -242,7 +252,7 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
                 ),
                 const SizedBox(height: 12),
                 TextField(
-                  onChanged: (v) => _dataSelecionada = v,
+                  controller: _dataController,
                   style: const TextStyle(color: AppTheme.onSurface),
                   decoration: InputDecoration(
                     filled: true,
@@ -264,8 +274,10 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
                       lastDate: DateTime(2027),
                     );
                     if (date != null) {
+                      final formatted = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+                      _dataController.text = formatted;
                       setState(() {
-                        _dataSelecionada = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+                        _dataSelecionada = formatted;
                       });
                     }
                   },
@@ -502,5 +514,11 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _dataController.dispose();
+    super.dispose();
   }
 }

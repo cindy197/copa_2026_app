@@ -22,8 +22,7 @@ class Jogo {
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final map = <String, dynamic>{
       'timeA': timeA,
       'timeB': timeB,
       'golsA': golsA,
@@ -33,7 +32,8 @@ class Jogo {
       'grupo': grupo,
       'status': status,
     };
-    
+    if (id != null) map['id'] = id;
+    return map;
   }
 
   factory Jogo.fromMap(Map<String, dynamic> map) {

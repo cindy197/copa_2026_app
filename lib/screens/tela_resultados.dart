@@ -36,7 +36,7 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
           : RefreshIndicator(
               onRefresh: () => ref.read(jogosProvider.notifier).carregarJogos(),
               child: ListView(
-                padding: const EdgeInsets.only(bottom: 100, top: 16),
+                padding: EdgeInsets.only(bottom: 100 + MediaQuery.of(context).padding.bottom, top: 16),
                 children: [
                   _buildHeroSummary(),
                   const SizedBox(height: 24),

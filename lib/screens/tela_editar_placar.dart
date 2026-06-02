@@ -91,7 +91,7 @@ class _TelaEditarPlacarState extends ConsumerState<TelaEditarPlacar> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 120 + MediaQuery.of(context).padding.bottom),
         child: Column(
           children: [
             _buildMatchContextCard(),
