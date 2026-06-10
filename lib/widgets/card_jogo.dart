@@ -120,6 +120,7 @@ class CardJogo extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           _textValue(jogo.timeA, 'Time A'),
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontFamily: 'Archivo Narrow',
                             fontSize: 24,
@@ -167,6 +168,7 @@ class CardJogo extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           _textValue(jogo.timeB, 'Time B'),
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontFamily: 'Archivo Narrow',
                             fontSize: 24,

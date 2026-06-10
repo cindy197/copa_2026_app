@@ -72,7 +72,7 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppTheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
@@ -210,7 +210,7 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
               letterSpacing: 1,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

@@ -26,12 +26,12 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
   String? _grupoSelecionado;
 
   final _times = [
-    'United States', 'Mexico', 'Canada', 'Brazil', 'Argentina',
-    'France', 'Germany', 'England', 'Spain', 'Italy', 'Portugal', 'Japan',
+    'Brasil', 'Argentina', 'Estados Unidos', 'México', 'Canadá',
+    'França', 'Alemanha', 'Inglaterra', 'Espanha', 'Itália', 'Portugal', 'Japão',
   ];
 
   final _estadios = [
-    'Azteca Stadium', 'MetLife Stadium', 'SoFi Stadium', 'BC Place',
+    'Estádio Azteca', 'Estádio MetLife', 'Estádio SoFi', 'BC Place',
   ];
 
   final _grupos = ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo E', 'Grupo F', 'Grupo G', 'Grupo H'];
