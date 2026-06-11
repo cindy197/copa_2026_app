@@ -1,34 +1,81 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/jogo.dart';
+import '../models/classificacao_time.dart';
 import '../data/database_helper.dart';
 
-final jogosProvider = ChangeNotifierProvider<JogosProvider>((ref) {
-  return JogosProvider();
-});
+class JogosState {
+  final List<Jogo> jogos;
+  final bool carregando;
+  final String? erro;
+  final String grupoSelecionado;
+  final List<ClassificacaoTime> classificacao;
 
-class JogosProvider extends ChangeNotifier {
-  List<Jogo> _jogos = [];
-  bool _carregando = false;
-  String? _erro;
+  const JogosState({
+    this.jogos = const [],
+    this.carregando = false,
+    this.erro,
+    this.grupoSelecionado = 'Grupo A',
+    this.classificacao = const [],
+  });
 
-  List<Jogo> get jogos => _jogos;
-  bool get carregando => _carregando;
-  String? get erro => _erro;
+  JogosState copyWith({
+    List<Jogo>? jogos,
+    bool? carregando,
+    bool clearErro = false,
+    String? erro,
+    String? grupoSelecionado,
+    List<ClassificacaoTime>? classificacao,
+  }) {
+    return JogosState(
+      jogos: jogos ?? this.jogos,
+      carregando: carregando ?? this.carregando,
+      erro: clearErro ? null : (erro ?? this.erro),
+      grupoSelecionado: grupoSelecionado ?? this.grupoSelecionado,
+      classificacao: classificacao ?? this.classificacao,
+    );
+  }
+
+  List<Jogo> get jogosAoVivo =>
+      jogos.where((j) => j.status == 'ao_vivo').toList();
+
+  List<Jogo> get jogosAgendados =>
+      jogos.where((j) => j.status == 'agendado').toList();
+
+  List<Jogo> get jogosFinalizados =>
+      jogos.where((j) => j.status == 'finalizado').toList();
+}
+
+final jogosProvider =
+    NotifierProvider<JogosNotifier, JogosState>(JogosNotifier.new);
+
+class JogosNotifier extends Notifier<JogosState> {
+  @override
+  JogosState build() => const JogosState();
 
   Future<void> carregarJogos() async {
-    _carregando = true;
-    _erro = null;
-    notifyListeners();
+    state = state.copyWith(carregando: true, clearErro: true);
 
     try {
-      _jogos = await DatabaseHelper.instance.getAllJogos();
+      final jogos = await DatabaseHelper.instance.getAllJogos();
+      final classif = DatabaseHelper.calcularClassificacao(
+        jogos, state.grupoSelecionado,
+      );
+      state = state.copyWith(
+        jogos: jogos,
+        classificacao: classif,
+        carregando: false,
+      );
     } catch (e) {
-      _erro = 'Erro ao carregar jogos: $e';
-    } finally {
-      _carregando = false;
-      notifyListeners();
+      state = state.copyWith(
+        carregando: false,
+        erro: 'Erro ao carregar jogos: $e',
+      );
     }
+  }
+
+  void selecionarGrupo(String grupo) {
+    final classif = DatabaseHelper.calcularClassificacao(state.jogos, grupo);
+    state = state.copyWith(grupoSelecionado: grupo, classificacao: classif);
   }
 
   Future<bool> adicionarJogo(Jogo jogo) async {
@@ -37,8 +84,7 @@ class JogosProvider extends ChangeNotifier {
       await carregarJogos();
       return true;
     } catch (e) {
-      _erro = 'Erro ao cadastrar jogo: $e';
-      notifyListeners();
+      state = state.copyWith(erro: 'Erro ao cadastrar jogo: $e');
       return false;
     }
   }
@@ -49,8 +95,7 @@ class JogosProvider extends ChangeNotifier {
       await carregarJogos();
       return true;
     } catch (e) {
-      _erro = 'Erro ao atualizar jogo: $e';
-      notifyListeners();
+      state = state.copyWith(erro: 'Erro ao atualizar jogo: $e');
       return false;
     }
   }
@@ -61,18 +106,8 @@ class JogosProvider extends ChangeNotifier {
       await carregarJogos();
       return true;
     } catch (e) {
-      _erro = 'Erro ao remover jogo: $e';
-      notifyListeners();
+      state = state.copyWith(erro: 'Erro ao remover jogo: $e');
       return false;
     }
   }
-
-  List<Jogo> get jogosAoVivo =>
-      _jogos.where((j) => j.status == 'ao_vivo').toList();
-
-  List<Jogo> get jogosAgendados =>
-      _jogos.where((j) => j.status == 'agendado').toList();
-
-  List<Jogo> get jogosFinalizados =>
-      _jogos.where((j) => j.status == 'finalizado').toList();
 }

@@ -28,12 +28,12 @@ class _TelaListaJogosState extends ConsumerState<TelaListaJogos> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(jogosProvider);
-    final jogos = provider.jogos;
-    final carregando = provider.carregando;
-    final jogosAoVivo = provider.jogosAoVivo;
-    final proximosJogos = provider.jogosAgendados;
-    final jogosFinalizados = provider.jogosFinalizados;
+    final state = ref.watch(jogosProvider);
+    final jogos = state.jogos;
+    final carregando = state.carregando;
+    final jogosAoVivo = state.jogosAoVivo;
+    final proximosJogos = state.jogosAgendados;
+    final jogosFinalizados = state.jogosFinalizados;
 
     return Scaffold(
       backgroundColor: AppTheme.background,

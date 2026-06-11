@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/jogo.dart';
+import '../models/classificacao_time.dart';
 import '../theme/app_theme.dart';
 import '../providers/jogos_provider.dart';
 import '../widgets/top_app_bar.dart';
@@ -14,6 +15,8 @@ class TelaResultados extends ConsumerStatefulWidget {
 }
 
 class _TelaResultadosState extends ConsumerState<TelaResultados> {
+  final _grupos = ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo E', 'Grupo F', 'Grupo G', 'Grupo H'];
+
   @override
   void initState() {
     super.initState();
@@ -24,9 +27,11 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = ref.watch(jogosProvider);
-    final jogosFinalizados = provider.jogosFinalizados;
-    final carregando = provider.carregando;
+    final state = ref.watch(jogosProvider);
+    final jogosFinalizados = state.jogosFinalizados;
+    final carregando = state.carregando;
+    final classificacao = state.classificacao;
+    final grupoSelecionado = state.grupoSelecionado;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -42,7 +47,7 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
                   const SizedBox(height: 24),
                   _buildRecentResults(jogosFinalizados),
                   const SizedBox(height: 24),
-                  _buildBentoGrid(),
+                  _buildBentoGrid(classificacao, grupoSelecionado),
                   const SizedBox(height: 24),
                   _buildCtaSection(),
                 ],
@@ -284,12 +289,12 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
     );
   }
 
-  Widget _buildBentoGrid() {
+  Widget _buildBentoGrid(List<ClassificacaoTime> classificacao, String grupoSelecionado) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildGroupStandings(),
+          _buildGroupStandings(classificacao, grupoSelecionado),
           const SizedBox(height: 16),
           _buildGoldenBoot(),
         ],
@@ -297,7 +302,7 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
     );
   }
 
-  Widget _buildGroupStandings() {
+  Widget _buildGroupStandings(List<ClassificacaoTime> classificacao, String grupoSelecionado) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -308,27 +313,58 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.format_list_numbered, color: AppTheme.primaryContainer),
-              SizedBox(width: 8),
+              const Icon(Icons.format_list_numbered, color: AppTheme.primaryContainer),
+              const SizedBox(width: 8),
               Text(
-                'Classificação Grupo C',
-                style: TextStyle(
+                'Classificação ',
+                style: const TextStyle(
                   fontFamily: 'Archivo Narrow',
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.primary,
                 ),
               ),
+              DropdownButton<String>(
+                value: grupoSelecionado,
+                dropdownColor: AppTheme.surfaceContainer,
+                style: const TextStyle(
+                  fontFamily: 'Archivo Narrow',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primaryContainer,
+                ),
+                underline: const SizedBox(),
+                items: _grupos.map((g) => DropdownMenuItem(
+                  value: g,
+                  child: Text(g),
+                )).toList(),
+                onChanged: (g) {
+                  if (g != null) ref.read(jogosProvider.notifier).selecionarGrupo(g);
+                },
+              ),
             ],
           ),
           const SizedBox(height: 16),
           _buildTableHeader(),
-          _buildTableRow('Spain', 3, '+5', 9, isActive: true),
-          _buildTableRow('Mexico', 3, '+1', 6, isActive: true),
-          _buildTableRow('Japan', 3, '-2', 3),
-          _buildTableRow('Canada', 3, '-4', 0),
+          if (classificacao.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: Text(
+                  'Nenhum jogo finalizado neste grupo',
+                  style: TextStyle(color: AppTheme.onSurfaceVariant),
+                ),
+              ),
+            )
+          else
+            ...classificacao.map((c) => _buildTableRow(
+              c.time, c.jogos,
+              c.saldoGols >= 0 ? '+${c.saldoGols}' : '${c.saldoGols}',
+              c.pontos,
+              isActive: c == classificacao.first,
+            )),
         ],
       ),
     );
