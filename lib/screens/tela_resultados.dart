@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/copa_data.dart';
 import '../models/jogo.dart';
 import '../models/classificacao_time.dart';
 import '../theme/app_theme.dart';
@@ -15,8 +16,6 @@ class TelaResultados extends ConsumerStatefulWidget {
 }
 
 class _TelaResultadosState extends ConsumerState<TelaResultados> {
-  final _grupos = ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo E', 'Grupo F', 'Grupo G', 'Grupo H'];
-
   @override
   void initState() {
     super.initState();
@@ -41,7 +40,10 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
           : RefreshIndicator(
               onRefresh: () => ref.read(jogosProvider.notifier).carregarJogos(),
               child: ListView(
-                padding: EdgeInsets.only(bottom: 100 + MediaQuery.of(context).padding.bottom, top: 16),
+                padding: EdgeInsets.only(
+                  bottom: 100 + MediaQuery.of(context).padding.bottom,
+                  top: 16,
+                ),
                 children: [
                   _buildHeroSummary(),
                   const SizedBox(height: 24),
@@ -77,32 +79,44 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-      padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppTheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppTheme.outlineVariant.withValues(alpha: 0.3)),
+          border: Border.all(
+            color: AppTheme.outlineVariant.withValues(alpha: 0.3),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.stars, size: 14, color: AppTheme.secondaryContainer),
-                    const SizedBox(width: 4),
-                    const Text(
-                      'FASE: MATA-MATA',
-                      style: TextStyle(
-                        fontFamily: 'JetBrains Mono',
-                        fontSize: 12,
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.stars,
+                        size: 14,
                         color: AppTheme.secondaryContainer,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 4),
+                      const Flexible(
+                        child: Text(
+                          'FASE: MATA-MATA',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontFamily: 'JetBrains Mono',
+                            fontSize: 12,
+                            color: AppTheme.secondaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 const Text(
                   'JULHO 2026',
                   style: TextStyle(
@@ -145,17 +159,21 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Últimos Resultados',
-                style: TextStyle(
-                  fontFamily: 'Archivo Narrow',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primary,
+              const Expanded(
+                child: Text(
+                  'Últimos Resultados',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontFamily: 'Archivo Narrow',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primary,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Row(
                 children: [
                   const Text(
@@ -167,7 +185,11 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(Icons.arrow_forward, size: 16, color: AppTheme.secondaryContainer),
+                  const Icon(
+                    Icons.arrow_forward,
+                    size: 16,
+                    color: AppTheme.secondaryContainer,
+                  ),
                 ],
               ),
             ],
@@ -202,7 +224,9 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.outlineVariant.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: AppTheme.outlineVariant.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         children: [
@@ -222,11 +246,14 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
               Column(
                 children: [
                   Container(
-                    width: 48, height: 48,
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppTheme.surfaceBright,
-                      border: Border.all(color: AppTheme.outlineVariant.withValues(alpha: 0.5)),
+                      border: Border.all(
+                        color: AppTheme.outlineVariant.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: const Icon(Icons.flag, color: AppTheme.onSurface),
                   ),
@@ -253,11 +280,14 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
               Column(
                 children: [
                   Container(
-                    width: 48, height: 48,
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppTheme.surfaceBright,
-                      border: Border.all(color: AppTheme.outlineVariant.withValues(alpha: 0.5)),
+                      border: Border.all(
+                        color: AppTheme.outlineVariant.withValues(alpha: 0.5),
+                      ),
                     ),
                     child: const Icon(Icons.flag, color: AppTheme.onSurface),
                   ),
@@ -289,7 +319,10 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
     );
   }
 
-  Widget _buildBentoGrid(List<ClassificacaoTime> classificacao, String grupoSelecionado) {
+  Widget _buildBentoGrid(
+    List<ClassificacaoTime> classificacao,
+    String grupoSelecionado,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -302,49 +335,67 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
     );
   }
 
-  Widget _buildGroupStandings(List<ClassificacaoTime> classificacao, String grupoSelecionado) {
+  Widget _buildGroupStandings(
+    List<ClassificacaoTime> classificacao,
+    String grupoSelecionado,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.outlineVariant.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: AppTheme.outlineVariant.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.format_list_numbered, color: AppTheme.primaryContainer),
-              const SizedBox(width: 8),
-              Text(
-                'Classificação ',
-                style: const TextStyle(
-                  fontFamily: 'Archivo Narrow',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primary,
-                ),
+              const Icon(
+                Icons.format_list_numbered,
+                color: AppTheme.primaryContainer,
               ),
-              DropdownButton<String>(
-                value: grupoSelecionado,
-                dropdownColor: AppTheme.surfaceContainer,
-                style: const TextStyle(
-                  fontFamily: 'Archivo Narrow',
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primaryContainer,
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Classificação',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontFamily: 'Archivo Narrow',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primary,
+                  ),
                 ),
-                underline: const SizedBox(),
-                items: _grupos.map((g) => DropdownMenuItem(
-                  value: g,
-                  child: Text(g),
-                )).toList(),
-                onChanged: (g) {
-                  if (g != null) ref.read(jogosProvider.notifier).selecionarGrupo(g);
-                },
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: DropdownButton<String>(
+              value: grupoSelecionado,
+              isExpanded: true,
+              dropdownColor: AppTheme.surfaceContainer,
+              style: const TextStyle(
+                fontFamily: 'Archivo Narrow',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.primaryContainer,
+              ),
+              underline: const SizedBox(),
+              items: CopaData.grupos
+                  .map((g) => DropdownMenuItem(value: g, child: Text(g)))
+                  .toList(),
+              onChanged: (g) {
+                if (g != null) {
+                  ref.read(jogosProvider.notifier).selecionarGrupo(g);
+                }
+              },
+            ),
           ),
           const SizedBox(height: 16),
           _buildTableHeader(),
@@ -359,12 +410,15 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
               ),
             )
           else
-            ...classificacao.map((c) => _buildTableRow(
-              c.time, c.jogos,
-              c.saldoGols >= 0 ? '+${c.saldoGols}' : '${c.saldoGols}',
-              c.pontos,
-              isActive: c == classificacao.first,
-            )),
+            ...classificacao.map(
+              (c) => _buildTableRow(
+                c.time,
+                c.jogos,
+                c.saldoGols >= 0 ? '+${c.saldoGols}' : '${c.saldoGols}',
+                c.pontos,
+                isActive: c == classificacao.first,
+              ),
+            ),
         ],
       ),
     );
@@ -379,21 +433,69 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
       ),
       child: const Row(
         children: [
-          Expanded(flex: 3, child: Text('TIME', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12, color: AppTheme.onSurfaceVariant))),
-          Expanded(child: Text('J', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12, color: AppTheme.onSurfaceVariant))),
-          Expanded(child: Text('SG', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12, color: AppTheme.onSurfaceVariant))),
-          Expanded(child: Text('P', textAlign: TextAlign.right, style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12, color: AppTheme.onSurfaceVariant))),
+          Expanded(
+            flex: 3,
+            child: Text(
+              'TIME',
+              style: TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 12,
+                color: AppTheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              'J',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 12,
+                color: AppTheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              'SG',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 12,
+                color: AppTheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              'P',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 12,
+                color: AppTheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTableRow(String team, int p, String gd, int pts, {bool isActive = false}) {
+  Widget _buildTableRow(
+    String team,
+    int p,
+    String gd,
+    int pts, {
+    bool isActive = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       decoration: BoxDecoration(
         border: isActive
-            ? const Border(left: BorderSide(color: AppTheme.surfaceTint, width: 3))
+            ? const Border(
+                left: BorderSide(color: AppTheme.surfaceTint, width: 3),
+              )
             : null,
       ),
       child: Row(
@@ -402,15 +504,59 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
             flex: 3,
             child: Row(
               children: [
-                const Icon(Icons.flag, size: 16, color: AppTheme.onSurfaceVariant),
+                const Icon(
+                  Icons.flag,
+                  size: 16,
+                  color: AppTheme.onSurfaceVariant,
+                ),
                 const SizedBox(width: 8),
-                Text(team, style: TextStyle(fontSize: 16, fontWeight: isActive ? FontWeight.w600 : FontWeight.normal, color: AppTheme.onSurface)),
+                Text(
+                  team,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                    color: AppTheme.onSurface,
+                  ),
+                ),
               ],
             ),
           ),
-          Expanded(child: Text('$p', textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 14, color: AppTheme.onSurface))),
-          Expanded(child: Text(gd, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 14, color: AppTheme.onSurface))),
-          Expanded(child: Text('$pts', textAlign: TextAlign.right, style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 14, fontWeight: FontWeight.bold, color: isActive ? AppTheme.primaryContainer : AppTheme.onSurface))),
+          Expanded(
+            child: Text(
+              '$p',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 14,
+                color: AppTheme.onSurface,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              gd,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 14,
+                color: AppTheme.onSurface,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              '$pts',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: isActive
+                    ? AppTheme.primaryContainer
+                    : AppTheme.onSurface,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -422,7 +568,9 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
       decoration: BoxDecoration(
         color: AppTheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.outlineVariant.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: AppTheme.outlineVariant.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,24 +605,40 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
         Stack(
           children: [
             Container(
-              width: 48, height: 48,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppTheme.primaryContainer.withValues(alpha: 0.1),
-                border: Border.all(color: AppTheme.primaryContainer.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppTheme.primaryContainer.withValues(alpha: 0.3),
+                ),
               ),
               child: const Icon(Icons.person, color: AppTheme.onSurfaceVariant),
             ),
             Positioned(
-              bottom: -2, right: -2,
+              bottom: -2,
+              right: -2,
               child: Container(
-                width: 20, height: 20,
+                width: 20,
+                height: 20,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: position == 1 ? AppTheme.primaryContainer : AppTheme.surfaceBright,
+                  color: position == 1
+                      ? AppTheme.primaryContainer
+                      : AppTheme.surfaceBright,
                 ),
                 child: Center(
-                  child: Text('$position', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: position == 1 ? AppTheme.onPrimaryContainer : AppTheme.onSurface)),
+                  child: Text(
+                    '$position',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: position == 1
+                          ? AppTheme.onPrimaryContainer
+                          : AppTheme.onSurface,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -485,12 +649,30 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.onSurface)),
+              Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.onSurface,
+                ),
+              ),
               Row(
                 children: [
-                  const Icon(Icons.flag, size: 12, color: AppTheme.onSurfaceVariant),
+                  const Icon(
+                    Icons.flag,
+                    size: 12,
+                    color: AppTheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 4),
-                  Text(country, style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 12, color: AppTheme.onSurfaceVariant)),
+                  Text(
+                    country,
+                    style: const TextStyle(
+                      fontFamily: 'JetBrains Mono',
+                      fontSize: 12,
+                      color: AppTheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -499,8 +681,23 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text('$goals', style: const TextStyle(fontFamily: 'JetBrains Mono', fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.primaryContainer)),
-            const Text('GOLS', style: TextStyle(fontFamily: 'JetBrains Mono', fontSize: 10, color: AppTheme.onSurfaceVariant)),
+            Text(
+              '$goals',
+              style: const TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primaryContainer,
+              ),
+            ),
+            const Text(
+              'GOLS',
+              style: TextStyle(
+                fontFamily: 'JetBrains Mono',
+                fontSize: 10,
+                color: AppTheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ],
@@ -519,7 +716,11 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
         ),
         child: Column(
           children: [
-            const Icon(Icons.notifications_active, size: 40, color: AppTheme.secondaryContainer),
+            const Icon(
+              Icons.notifications_active,
+              size: 40,
+              color: AppTheme.secondaryContainer,
+            ),
             const SizedBox(height: 12),
             const Text(
               'Não Perca a Final!',
@@ -534,7 +735,11 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
             const Text(
               'Cadastre-se para receber alertas em tempo real sobre ingressos e novidades da Final da Copa do Mundo 2026.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Inter', fontSize: 16, color: AppTheme.onSurfaceVariant),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                color: AppTheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -545,7 +750,9 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryContainer,
                   foregroundColor: AppTheme.onPrimaryContainer,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(999),
+                  ),
                   elevation: 4,
                 ),
                 child: const Row(
@@ -555,7 +762,11 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
                     SizedBox(width: 8),
                     Text(
                       'CADASTRE-SE',
-                      style: TextStyle(fontFamily: 'Archivo Narrow', fontSize: 18, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontFamily: 'Archivo Narrow',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),

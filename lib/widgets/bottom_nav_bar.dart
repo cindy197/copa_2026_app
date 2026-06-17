@@ -30,25 +30,30 @@ class BottomNavBar extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(
-                icon: Icons.calendar_today,
-                label: 'Jogos',
-                isActive: currentIndex == 0,
-                onTap: () => onTap(0),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.calendar_today,
+                  label: 'Jogos',
+                  isActive: currentIndex == 0,
+                  onTap: () => onTap(0),
+                ),
               ),
-              _NavItem(
-                icon: Icons.add_circle,
-                label: 'Cadastrar',
-                isActive: currentIndex == 1,
-                onTap: () => onTap(1),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.add_circle,
+                  label: 'Cadastrar',
+                  isActive: currentIndex == 1,
+                  onTap: () => onTap(1),
+                ),
               ),
-              _NavItem(
-                icon: Icons.leaderboard,
-                label: 'Resultados',
-                isActive: currentIndex == 2,
-                onTap: () => onTap(2),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.leaderboard,
+                  label: 'Resultados',
+                  isActive: currentIndex == 2,
+                  onTap: () => onTap(2),
+                ),
               ),
             ],
           ),
@@ -77,7 +82,7 @@ class _NavItem extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: isActive ? AppTheme.primaryContainer : Colors.transparent,
           borderRadius: BorderRadius.circular(999),
@@ -92,6 +97,8 @@ class _NavItem extends StatelessWidget {
             ),
             Text(
               label,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 12,

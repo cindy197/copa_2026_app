@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/copa_data.dart';
 import '../models/jogo.dart';
 import '../theme/app_theme.dart';
 import '../providers/jogos_provider.dart';
@@ -24,17 +25,6 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
   int _golsA = 0;
   int _golsB = 0;
   String? _grupoSelecionado;
-
-  final _times = [
-    'Brasil', 'Argentina', 'Estados Unidos', 'México', 'Canadá',
-    'França', 'Alemanha', 'Inglaterra', 'Espanha', 'Itália', 'Portugal', 'Japão',
-  ];
-
-  final _estadios = [
-    'Estádio Azteca', 'Estádio MetLife', 'Estádio SoFi', 'BC Place',
-  ];
-
-  final _grupos = ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo E', 'Grupo F', 'Grupo G', 'Grupo H'];
 
   Future<void> _salvarJogo() async {
     if (_timeASelecionado == null || _timeBSelecionado == null) {
@@ -137,7 +127,7 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
 
   Widget _buildHeroSection() {
     return Container(
-      height: 180,
+      height: 196,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: const LinearGradient(
@@ -185,6 +175,7 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
   }
 
   Widget _buildTeamsSection() {
+    final timesDoGrupo = CopaData.timesDoGrupo(_grupoSelecionado);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -195,10 +186,22 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildDropdown(
+            label: 'GRUPO',
+            icon: Icons.emoji_events,
+            value: _grupoSelecionado,
+            items: CopaData.grupos,
+            onChanged: (v) => setState(() {
+              _grupoSelecionado = v;
+              _timeASelecionado = null;
+              _timeBSelecionado = null;
+            }),
+          ),
+          const SizedBox(height: 16),
+          _buildDropdown(
             label: 'TIME DA CASA',
             icon: Icons.home,
             value: _timeASelecionado,
-            items: _times.where((t) => t != _timeBSelecionado).toList(),
+            items: timesDoGrupo.where((t) => t != _timeBSelecionado).toList(),
             onChanged: (v) => setState(() => _timeASelecionado = v),
           ),
           const SizedBox(height: 16),
@@ -206,16 +209,8 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
             label: 'TIME VISITANTE',
             icon: Icons.flight,
             value: _timeBSelecionado,
-            items: _times.where((t) => t != _timeASelecionado).toList(),
+            items: timesDoGrupo.where((t) => t != _timeASelecionado).toList(),
             onChanged: (v) => setState(() => _timeBSelecionado = v),
-          ),
-          const SizedBox(height: 16),
-          _buildDropdown(
-            label: 'GRUPO',
-            icon: Icons.emoji_events,
-            value: _grupoSelecionado,
-            items: _grupos,
-            onChanged: (v) => setState(() => _grupoSelecionado = v),
           ),
         ],
       ),
@@ -239,13 +234,17 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
                   children: [
                     Icon(Icons.calendar_month, size: 18, color: AppTheme.onSurfaceVariant),
                     SizedBox(width: 6),
-                    Text(
-                      'DATA DA PARTIDA',
-                      style: TextStyle(
-                        fontFamily: 'JetBrains Mono',
-                        fontSize: 12,
-                        letterSpacing: 0.05,
-                        color: AppTheme.onSurfaceVariant,
+                    Expanded(
+                      child: Text(
+                        'DATA DA PARTIDA',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontFamily: 'JetBrains Mono',
+                          fontSize: 12,
+                          letterSpacing: 0.05,
+                          color: AppTheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ],
@@ -298,7 +297,7 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
               label: 'ESTÁDIO',
               icon: Icons.stadium,
               value: _estadioSelecionado,
-              items: _estadios,
+              items: CopaData.estadios,
               onChanged: (v) => setState(() => _estadioSelecionado = v),
             ),
           ),
@@ -347,7 +346,7 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
 
   Widget _buildScoreStepper(String label, int value, Color accentColor, ValueChanged<int> onChanged) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
         color: AppTheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(8),
@@ -370,16 +369,16 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
               GestureDetector(
                 onTap: () => onChanged((value - 1).clamp(0, 99)),
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: AppTheme.surfaceVariant,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Icon(Icons.remove, color: AppTheme.primary),
+                  child: const Icon(Icons.remove, color: AppTheme.primary, size: 20),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   '$value',
                   style: TextStyle(
@@ -392,12 +391,12 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
               GestureDetector(
                 onTap: () => onChanged((value + 1).clamp(0, 99)),
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: AppTheme.surfaceVariant,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Icon(Icons.add, color: AppTheme.primary),
+                  child: const Icon(Icons.add, color: AppTheme.primary, size: 20),
                 ),
               ),
             ],
@@ -426,12 +425,16 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
               children: [
                 Icon(Icons.check_circle),
                 SizedBox(width: 8),
-                Text(
-                  'CADASTRAR PARTIDA',
-                  style: TextStyle(
-                    fontFamily: 'Archivo Narrow',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                Flexible(
+                  child: Text(
+                    'CADASTRAR PARTIDA',
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontFamily: 'Archivo Narrow',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -477,13 +480,17 @@ class _TelaCadastroJogoState extends ConsumerState<TelaCadastroJogo> {
           children: [
             Icon(icon, size: 18, color: AppTheme.onSurfaceVariant),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                fontFamily: 'JetBrains Mono',
-                fontSize: 12,
-                letterSpacing: 0.05,
-                color: AppTheme.onSurfaceVariant,
+            Expanded(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(
+                  fontFamily: 'JetBrains Mono',
+                  fontSize: 12,
+                  letterSpacing: 0.05,
+                  color: AppTheme.onSurfaceVariant,
+                ),
               ),
             ),
           ],

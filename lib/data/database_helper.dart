@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/jogo.dart';
 import '../models/classificacao_time.dart';
+import 'jogos_seed.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -35,6 +36,10 @@ class DatabaseHelper {
         status TEXT DEFAULT 'agendado'
       )
     ''');
+
+    for (final jogo in jogosSeed) {
+      await db.insert('jogos', jogo.toMap());
+    }
   }
 
   Future<int> insertJogo(Jogo jogo) async {
