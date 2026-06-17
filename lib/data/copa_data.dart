@@ -3,7 +3,7 @@ class CopaData {
 
   static const Map<String, List<String>> gruposTimes = {
     'Grupo A': ['México', 'África do Sul', 'Coreia do Sul', 'Tchéquia'],
-    'Grupo B': ['Canadá', 'Bósnia e Herzegovina', 'Catar', 'Suíça'],
+    'Grupo B': ['Canadá', 'Bósnia e Herzeg.', 'Catar', 'Suíça'],
     'Grupo C': ['Brasil', 'Marrocos', 'Haiti', 'Escócia'],
     'Grupo D': ['Estados Unidos', 'Paraguai', 'Austrália', 'Turquia'],
     'Grupo E': ['Alemanha', 'Curaçao', 'Costa do Marfim', 'Equador'],

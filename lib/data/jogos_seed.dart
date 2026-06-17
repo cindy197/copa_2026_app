@@ -23,7 +23,7 @@ final List<Jogo> jogosSeed = [
   ),
   Jogo(
     timeA: 'Canadá',
-    timeB: 'Bósnia e Herzegovina',
+    timeB: 'Bósnia e Herzeg.',
     golsA: 1,
     golsB: 1,
     data: '2026-06-12',

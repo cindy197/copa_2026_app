@@ -591,9 +591,9 @@ class _TelaResultadosState extends ConsumerState<TelaResultados> {
             ],
           ),
           const SizedBox(height: 16),
-          _buildScorerRow(1, 'Kylian Mbappé', 'France', 5),
+          _buildScorerRow(1, 'Kylian Mbappé', 'France', 2),
           const SizedBox(height: 12),
-          _buildScorerRow(2, 'Vinícius Jr.', 'Brazil', 4),
+          _buildScorerRow(2, 'Vinícius Jr.', 'Brasil', 1),
         ],
       ),
     );
